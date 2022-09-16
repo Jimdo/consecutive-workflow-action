@@ -5,6 +5,20 @@ function sleep(seconds) {
   return new Promise(resolve => setTimeout(resolve, seconds * 1000));
 }
 
+function repo() {
+  if (github.context.payload.repository) {
+    return {
+      owner: github.context.payload.repository.owner.login,
+      name: github.context.payload.repository.name
+    }
+  }
+
+  return {
+    owner: github.repo.owner,
+    name: github.repo.repo
+  }
+}
+
 async function run() {
   try {
     const token = core.getInput('token')
@@ -13,8 +27,9 @@ async function run() {
 
     const octokit = github.getOctokit(token)
 
-    const owner = github.context.payload.repository.owner.login
-    const repo = github.context.payload.repository.name
+    const repoInfo = repo();
+    const owner = repoInfo.owner
+    const repo = repoInfo.name
 
     // get current run (to know the workflow_id)
     let { data: currentRun } = await octokit.rest.actions.getWorkflowRun({
