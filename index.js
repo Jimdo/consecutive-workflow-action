@@ -6,7 +6,7 @@ function sleep(seconds) {
 }
 
 function repo() {
-  if (github.context.payload.repository) {
+  if (github.context.payload.repository && github.context.payload.repository.owner) {
     return {
       owner: github.context.payload.repository.owner.login,
       name: github.context.payload.repository.name
